@@ -5,12 +5,16 @@ import androidx.room.Room
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.imaginato.homeworkmvvm.data.local.demo.DemoDatabase
 import com.imaginato.homeworkmvvm.data.local.demo.DemoDao
+import com.imaginato.homeworkmvvm.data.local.demo.DemoDatabase
 import com.imaginato.homeworkmvvm.data.remote.demo.DemoApi
 import com.imaginato.homeworkmvvm.data.remote.demo.DemoDataRepository
 import com.imaginato.homeworkmvvm.data.remote.demo.DemoRepository
+import com.imaginato.homeworkmvvm.data.remote.login.LoginApi
+import com.imaginato.homeworkmvvm.data.remote.login.LoginRepository
+import com.imaginato.homeworkmvvm.data.remote.login.LoginRepositoryImpl
 import com.imaginato.homeworkmvvm.ui.demo.MainActivityViewModel
+import com.imaginato.homeworkmvvm.ui.login.LoginViewModel
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -42,16 +46,20 @@ val apiModules = module {
 
 val repositoryModules = module {
     single { provideDemoRepo(get()) }
+    single { provideLoginRepo(get()) }
 }
 
 val viewModelModules = module {
-    viewModel {
-        MainActivityViewModel()
-    }
+    viewModel { MainActivityViewModel() }
+    viewModel { LoginViewModel() }
 }
 
 private fun provideDemoRepo(api: DemoApi): DemoRepository {
     return DemoDataRepository(api)
+}
+
+private fun provideLoginRepo(api: LoginApi): LoginRepository {
+    return LoginRepositoryImpl(api)
 }
 
 private fun provideDemoApi(retrofit: Retrofit): DemoApi = retrofit.create(DemoApi::class.java)
