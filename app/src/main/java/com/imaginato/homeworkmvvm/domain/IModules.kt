@@ -58,7 +58,7 @@ val repositoryModules = module {
 
 val viewModelModules = module {
     viewModel { MainActivityViewModel() }
-    viewModel { LoginViewModel() }
+    viewModel { LoginViewModel(get()) }
 }
 
 private fun provideDemoRepo(api: DemoApi): DemoRepository {

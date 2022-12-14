@@ -14,8 +14,7 @@ import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.inject
 
 @KoinApiExtension
-class LoginViewModel : BaseViewModel() {
-    private val repository: LoginRepository by inject()
+class LoginViewModel(private val repository: LoginRepository): BaseViewModel() {
     private var _progress: MutableLiveData<Boolean> = MutableLiveData()
     val progress: LiveData<Boolean>
         get() = _progress
@@ -25,6 +24,10 @@ class LoginViewModel : BaseViewModel() {
 
     fun performLogin(username: String, password: String) {
         viewModelScope.launch {
+            if (username.isBlank() || password.isBlank()) {
+                _result.value = "Enter valid credentials!"
+                return@launch
+            }
             repository.performLogin(username, password)
                 .onStart {
                     _progress.value = true
