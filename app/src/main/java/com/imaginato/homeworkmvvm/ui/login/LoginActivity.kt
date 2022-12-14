@@ -1,6 +1,7 @@
 package com.imaginato.homeworkmvvm.ui.login
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.core.view.isVisible
 import com.imaginato.homeworkmvvm.databinding.ActivityLoginBinding
 import com.imaginato.homeworkmvvm.ui.base.BaseActivity
@@ -17,7 +18,9 @@ class LoginActivity : BaseActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.btnLogin.setOnClickListener {
-            viewModel.performLogin()
+            val username = binding.edtUsername.editText?.text.toString()
+            val password = binding.edtPassword.editText?.text.toString()
+            viewModel.performLogin(username, password)
         }
         initObserve()
     }
@@ -25,6 +28,9 @@ class LoginActivity : BaseActivity() {
     private fun initObserve() {
         viewModel.progress.observe(this) {
             binding.pbLoading.isVisible = it
+        }
+        viewModel.result.observe(this) {
+            Toast.makeText(this@LoginActivity, it, Toast.LENGTH_LONG).show()
         }
     }
 }

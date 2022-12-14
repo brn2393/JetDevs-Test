@@ -1,12 +1,15 @@
 package com.imaginato.homeworkmvvm.domain
 
 import android.app.Application
+import android.util.Log
 import androidx.room.Room
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.imaginato.homeworkmvvm.data.local.demo.DemoDao
 import com.imaginato.homeworkmvvm.data.local.demo.DemoDatabase
+import com.imaginato.homeworkmvvm.data.local.login.LoginDao
+import com.imaginato.homeworkmvvm.data.local.login.LoginDatabase
 import com.imaginato.homeworkmvvm.data.remote.demo.DemoApi
 import com.imaginato.homeworkmvvm.data.remote.demo.DemoDataRepository
 import com.imaginato.homeworkmvvm.data.remote.demo.DemoRepository
@@ -25,12 +28,15 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import kotlin.math.log
 
-private const val BASE_URL = "https://ifconfig.me/"
+//private const val BASE_URL = "https://ifconfig.me/"
+private const val BASE_URL = "http://private-222d3-homework5.apiary-mock.com/"
 
 val databaseModule = module {
     single { provideDatabase(androidApplication()) }
     single { provideDao(get()) }
+    single { provideLoginDao(get()) }
 }
 
 val netModules = module {
@@ -42,11 +48,12 @@ val netModules = module {
 
 val apiModules = module {
     single { provideDemoApi(get()) }
+    single { provideLoginApi(get()) }
 }
 
 val repositoryModules = module {
     single { provideDemoRepo(get()) }
-    single { provideLoginRepo(get()) }
+    single { provideLoginRepo(get(), get()) }
 }
 
 val viewModelModules = module {
@@ -58,20 +65,26 @@ private fun provideDemoRepo(api: DemoApi): DemoRepository {
     return DemoDataRepository(api)
 }
 
-private fun provideLoginRepo(api: LoginApi): LoginRepository {
-    return LoginRepositoryImpl(api)
+private fun provideLoginRepo(api: LoginApi, loginDao: LoginDao): LoginRepository {
+    return LoginRepositoryImpl(api, loginDao)
 }
 
 private fun provideDemoApi(retrofit: Retrofit): DemoApi = retrofit.create(DemoApi::class.java)
 
-private fun provideDatabase(application: Application): DemoDatabase {
-    return Room.databaseBuilder(application, DemoDatabase::class.java, "I-Database")
+private fun provideLoginApi(retrofit: Retrofit): LoginApi = retrofit.create(LoginApi::class.java)
+
+private fun provideDatabase(application: Application): LoginDatabase {
+    return Room.databaseBuilder(application, LoginDatabase::class.java, "I-Database")
         .fallbackToDestructiveMigration()
         .build()
 }
 
 private fun provideDao(database: DemoDatabase): DemoDao {
     return database.demoDao
+}
+
+private fun provideLoginDao(database: LoginDatabase): LoginDao {
+    return database.loginDao
 }
 
 private fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {

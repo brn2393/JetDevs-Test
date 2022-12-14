@@ -1,4 +1,6 @@
 package com.imaginato.homeworkmvvm.data.remote.login.request
 
-class LoginRequest {
-}
+data class LoginRequest(
+    val username: String,
+    val password: String
+)

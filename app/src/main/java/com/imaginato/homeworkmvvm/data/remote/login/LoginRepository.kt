@@ -4,5 +4,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface LoginRepository {
 
-    fun performLogin(): Flow<String>
+    fun performLogin(username: String, password: String): Flow<String?>
 }
